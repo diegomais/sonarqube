@@ -13,7 +13,7 @@ services:
     networks:
       - sonarnet
     ports:
-      - 9000:9000
+      - 5000:9000
     volumes:
       - sonarqube_data:/opt/sonarqube/data
       - sonarqube_extensions:/opt/sonarqube/extensions
