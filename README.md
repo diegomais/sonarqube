@@ -32,18 +32,9 @@ You can run the database and server by executing the instruction bellow on your 
 
 `docker-compose up`
 
-After the server is up, you can browse SonarQube at `http://localhost:9000`.
+After the server is up, you can browse SonarQube at `http://localhost:5000`.
 
 The default System administrator credentials are admin/admin.
-
-### Setting up the scanner
-
-Once the SonarQube server has been installed, you're ready to install SonarScanner and begin analyzing source code. To do that, you must install and configure the scanner that is most appropriate for your needs.
-
-1. [Download SonarScanner](https://docs.sonarqube.org/latest/analysis/scan/sonarscanner/).
-2. Create directory `~/.sonarqube`.
-3. Extract files into `~/.sonarqube/sonar-scanner-X.X.X.XXXX-macosx`.
-4. Add `export PATH="$HOME/.sonarqube/sonar-scanner-X.X.X.XXXX-macosx/bin:$PATH"` into `~/.zshrc`.
 
 ### Analyzing source code
 
@@ -56,13 +47,13 @@ Create a configuration file in your project's root directory called `sonar-proje
 sonar.projectKey=my:project
 
 # Path is relative to the sonar-project.properties file. Defaults to .
-#sonar.sources=.
+sonar.sources=.
 
 # Encoding of the source code. Default is default system encoding
-#sonar.sourceEncoding=UTF-8
+# sonar.sourceEncoding=UTF-8
 
 # Default SonarQube server
-sonar.host.url=http://localhost:9000
+sonar.host.url=http://sonarqube:9000
 
 # Token generated when your project is created on browser
 sonar.login=46dbe7b5171c84327706e73508daffd8
@@ -70,11 +61,32 @@ sonar.login=46dbe7b5171c84327706e73508daffd8
 
 #### Running SonarScanner
 
-Run the following command from the project base directory to launch the analysis: `sonar-scanner`. After the task is done you can check the results on browser.
+Run the following command from the project base directory to launch the analysis:
+
+```
+docker run \
+    --rm \
+    -v "$PWD:/usr/src" \
+    --network sonarqube_sonarnet \
+    sonarsource/sonar-scanner-cli
+```
+
+After the task is done you can check the results on browser.
 
 #### Multiple sub-projects
 
-You can add a configuration file inside base directory of each sub-project and executing on parent folder: `for d in ./*/ ; do (cd "$d" && sonar-scanner); done`.
+You can add a configuration file inside base directory of each sub-project and executing on parent folder:
+
+```
+for d in ./*/ ; do ( \
+    cd "$d" && \
+    docker run \
+        --rm \
+        -v "$PWD:/usr/src" \
+        --network sonarqube_sonarnet \
+        sonarsource/sonar-scanner-cli \
+); done
+```
 
 ---
 
